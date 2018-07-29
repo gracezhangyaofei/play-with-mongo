@@ -1,0 +1,64 @@
+defaults: &defaults
+  hosts:
+    - localhost:<%= ENV.fetch('GD_MONGODB', 27017) %>
+
+db_options: &db_options
+  options:
+    include_type_for_serialization: true
+    raise_not_found_error: false
+    belongs_to_required_by_default: false
+
+development:
+  clients:
+    default:
+      <<: *defaults
+      database: play_with_mongo_development
+  <<: *db_options
+
+test:
+  clients:
+    default:
+      <<: *defaults
+      database: play_with_mongo_test<%= ENV['TEST_ENV_NUMBER'] %>
+  <<: *db_options
+
+integration_test:
+  clients:
+    default:
+     <<: *defaults
+     database: play_with_mongo_integration_test<%= ENV['TEST_ENV_NUMBER'] %>
+  <<: *db_options
+
+uat:
+  clients:
+    default:
+      <<: *defaults
+      database: play_with_mongo_development
+      options:
+        user: 'gordon'
+        password: 'heyman'
+  <<: *db_options
+
+staging:
+  clients:
+    default:
+      <<: *defaults
+      database: play_with_mongo_development
+      options:
+        user: 'gordon'
+        password: 'heyman'
+  <<: *db_options
+
+production:
+  clients:
+    default:
+      <<: *defaults
+      database: goldendata
+      options:
+        roles:
+          - 'dbAdmin'
+          - 'readWrite'
+        connect: replica_set
+        replica_set: jsj
+        max_pool_size: 50
+  <<: *db_options
